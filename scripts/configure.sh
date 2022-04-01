@@ -9,7 +9,7 @@ if $(wp core is-installed); then
 fi
 
 wp core install --skip-email --title='WSP AWS' --url=$WORDPRESS_URL \
-    --admin_user=WORDPRESS_ADMIN_USER --admin_email=$WORDPRESS_ADMIN_EMAIL --admin_password=$WORDPRESS_ADMIN_PASSWORD
+    --admin_user=$WORDPRESS_ADMIN_USER --admin_email=$WORDPRESS_ADMIN_EMAIL --admin_password=$WORDPRESS_ADMIN_PASSWORD
 
 wp theme install storefront --activate \
     && wp plugin install woocommerce --activate \

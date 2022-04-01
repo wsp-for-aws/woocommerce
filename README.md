@@ -1,1 +1,1 @@
-
+There is an WooCommerce docker image with automatic installation.
