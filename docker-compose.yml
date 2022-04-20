@@ -27,6 +27,8 @@ services:
     environment:
       - MARIADB_ROOT_PASSWORD=wordpress
       - MARIADB_DATABASE=wordpress
+    volumes:
+      - ./db-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "-u", "root", "-p$$MARIADB_ROOT_PASSWORD", "ping"]
       timeout: 3s
