@@ -76,6 +76,9 @@ INSTALLED=$?
 set -e
 if [ $INSTALLED -eq 0 ]; then
     echo "Wordpress is already installed, skipping installation"
+    runuser -u www-data -- mv /var/www/html/wp-content /var/www/html/wp-content_backup && echo "Successfully backed up wp-content" || echo "Failed to back up wp-content"
+    runuser -u www-data -- ln -s /var/www/wp-content /var/www/html && echo "Created a symlink to wp-content" || echo "Failed to create symlink to wp-content"
+
     echo "Starting Apache"
     exec "$@"
 else
@@ -119,8 +122,8 @@ while true; do
     else
         echo "Copying is finished and take $(($(date +%s)-start_time)) seconds"
         #Move wp-content to /wp-content_backup
-        runuser -u www-data -- mv /var/www/html/wp-content /var/www/html/wp-content_backup && echo "Make a backup of wp-content" || echo "failed to back up wp-content"
-        runuser -u www-data -- ln -s /var/www/wp-content /var/www/html && echo "Create a symlink to wp-content" || echo "Failed to create symlink to wp-content"
+        runuser -u www-data -- mv /var/www/html/wp-content /var/www/html/wp-content_backup && echo "Successfully backed up wp-content" || echo "Failed to back up wp-content"
+        runuser -u www-data -- ln -s /var/www/wp-content /var/www/html && echo "Created a symlink to wp-content" || echo "Failed to create symlink to wp-content"
         echo "Kill temporary Apache and wait for child process"
         kill $APACHE_PID
         echo "Wait for child process to finish"
