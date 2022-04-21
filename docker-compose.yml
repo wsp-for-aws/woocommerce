@@ -23,13 +23,18 @@ services:
     volumes:
       - ./wp-content:/var/www/wp-content
   db:
+    #Add health check for MariaDB
+#    healthcheck:
+#      test: ["CMD", "mysql", "-h", "db", "-u", "root", "-p", "root", "-e", "SELECT 1"]
     image: mariadb
     environment:
-      - MARIADB_ROOT_PASSWORD=wordpress
-      - MARIADB_DATABASE=wordpress
+      - MARIADB_ROOT_PASSWORD
+      - MARIADB_USER
+      - MARIADB_PASSWORD
+      - MARIADB_DATABASE
     volumes:
       - ./db-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "-u", "root", "-p$$MARIADB_ROOT_PASSWORD", "ping"]
+      test: mysqladmin -u${MARIADB_USER} -p${MARIADB_ROOT_PASSWORD} ping -h localhost
       timeout: 3s
       retries: 10
