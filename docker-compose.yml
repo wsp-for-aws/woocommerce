@@ -23,9 +23,6 @@ services:
     volumes:
       - ./wp-content:/var/www/wp-content
   db:
-    #Add health check for MariaDB
-#    healthcheck:
-#      test: ["CMD", "mysql", "-h", "db", "-u", "root", "-p", "root", "-e", "SELECT 1"]
     image: mariadb
     environment:
       - MARIADB_ROOT_PASSWORD
