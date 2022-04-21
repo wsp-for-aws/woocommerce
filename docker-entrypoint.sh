@@ -104,6 +104,7 @@ fi
 
 set -u
 
+
 runuser -u www-data -- cp -pr /var/www/html/wp-content  /var/www/ &
 COPY_PID=$!
 echo "Start copying wp-content files, PID is $COPY_PID"
