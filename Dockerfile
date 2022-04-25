@@ -159,11 +159,9 @@ COPY .htaccess /var/www/html/.htaccess
 
 RUN chown -R www-data:www-data /var/www/html;
 
-#COPY --chown=www-data:www-data wordpress /var/www/html
-
 COPY docker-entrypoint.sh /usr/local/bin/
 
 
-VOLUME ["/var/www/wp-content"]
+VOLUME ["/mnt/data"]
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["apache2-foreground"]

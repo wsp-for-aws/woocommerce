@@ -27,9 +27,6 @@ if [[ "$1" == apache2* ]] || [ "$1" = 'php-fpm' ]; then
 	fi
 fi
 
-mkdir -p /var/www/wp-content/
-chown www-data:www-data  /var/www/wp-content
-
 #Do not fail if the environment variables are not set
 set +u
 #Assign the WSP DB environment variables to the WORDPRESS_ENVIRONMENT variables
@@ -78,7 +75,7 @@ set -e
 if [ $INSTALLED -eq 0 ]; then
     echo "Wordpress is already installed, skipping installation"
     runuser -u www-data -- mv /var/www/html/wp-content /var/www/html/wp-content_backup && echo "Successfully backed up wp-content" || echo "Failed to back up wp-content"
-    runuser -u www-data -- ln -s /var/www/wp-content /var/www/html && echo "Created a symlink to wp-content" || echo "Failed to create symlink to wp-content"
+    runuser -u www-data -- ln -s /mnt/data/wp-content /var/www/html && echo "Created a symlink to wp-content" || echo "Failed to create symlink to wp-content"
 
     echo "Starting Apache"
     exec "$@"
@@ -105,14 +102,14 @@ fi
 
 set -u
 
-
-runuser -u www-data -- cp -pr /var/www/html/wp-content  /var/www/ &
+mkdir -p /mnt/data/
+chown www-data:www-data  /mnt/data
+runuser -u www-data -- cp -pr /var/www/html/wp-content  /mnt/data/ &
 COPY_PID=$!
 echo "Start copying wp-content files, PID is $COPY_PID"
 start_time=$(date +%s)
 
-
-echo "Starting temporary Apache for at copying wp-content time"
+echo "Starting temporary Apache for at time of copying wp-content to EFS directory"
 "$@" &
 APACHE_PID=$!
 
@@ -123,9 +120,8 @@ while true; do
         echo "Copying in progress, $(($(date +%s)-start_time)) seconds elapsed"
     else
         echo "Copying is finished and take $(($(date +%s)-start_time)) seconds"
-        #Move wp-content to /wp-content_backup
         runuser -u www-data -- mv /var/www/html/wp-content /var/www/html/wp-content_backup && echo "Successfully backed up wp-content" || echo "Failed to back up wp-content"
-        runuser -u www-data -- ln -s /var/www/wp-content /var/www/html && echo "Created a symlink to wp-content" || echo "Failed to create symlink to wp-content"
+        runuser -u www-data -- ln -s /mnt/data/wp-content /var/www/html && echo "Created a symlink to wp-content" || echo "Failed to create symlink to wp-content"
         echo "Kill temporary Apache and wait for child process"
         kill $APACHE_PID
         echo "Wait for child process to finish"

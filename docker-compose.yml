@@ -21,7 +21,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./wp-content:/var/www/wp-content
+      - ./wp-content:/mnt/data
   db:
     image: mariadb
     environment:
