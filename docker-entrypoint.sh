@@ -57,11 +57,11 @@ if [ -z "$WORDPRESS_TITLE" ]; then
   export WORDPRESS_TITLE='WSP AWS'
 fi
 
-#Show static page with error if $WORDPRESS_URL is not set
-if [ -z "$WORDPRESS_URL" ]; then
-  echo '<h1>Environment variable $WORDPRESS_URL is not set. Please set it with Wordpress domain and re-deploy</h1>' > /var/www/html/index.html
+#Show static page with error if $DOMAIN_NAME is not set
+if [ -z "$DOMAIN_NAME" ]; then
+  echo '<h1>Environment variable $DOMAIN_NAME is not set. Please set it with Wordpress domain and re-deploy</h1>' > /var/www/html/index.html
   echo "DirectoryIndex index.html" >> /var/www/html/.htaccess
-  echo "Running Web-server to show error that WORDPRESS_URL is not set"
+  echo "Running Web-server to show error that DOMAIN_NAME is not set"
   exec "$@"
 else
   echo "Removing DirectoryIndex directive from .htaccess, index.php will be served"
@@ -85,10 +85,10 @@ else
     echo "Wordpress is not installed, going to install"
     if [ -z "$WORDPRESS_ADMIN_PASSWORD" ]; then
       runuser -u www-data -- wp core install --skip-email --title="$WORDPRESS_TITLE" \
-       --url="$WORDPRESS_URL" --admin_user="$WORDPRESS_ADMIN_USER" \
+       --url="$DOMAIN_NAME" --admin_user="$WORDPRESS_ADMIN_USER" \
        --admin_email="$WORDPRESS_ADMIN_EMAIL" --path=/var/www/html/
     else
-      runuser -u www-data -- wp core install --skip-email --title="$WORDPRESS_TITLE" --url="$WORDPRESS_URL" \
+      runuser -u www-data -- wp core install --skip-email --title="$WORDPRESS_TITLE" --url="$DOMAIN_NAME" \
       --admin_user="$WORDPRESS_ADMIN_USER" --admin_email="$WORDPRESS_ADMIN_EMAIL" \
       --admin_password="$WORDPRESS_ADMIN_PASSWORD" --path=/var/www/html/
     fi

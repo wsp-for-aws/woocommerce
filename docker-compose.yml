@@ -9,7 +9,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      - WORDPRESS_URL
+      - DOMAIN_NAME
       - WORDPRESS_ADMIN_USER
       - WORDPRESS_ADMIN_PASSWORD=wordpress #If you want to use the random generated password, just remove this line
       - WORDPRESS_ADMIN_EMAIL
