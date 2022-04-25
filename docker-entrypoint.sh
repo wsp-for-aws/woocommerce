@@ -57,6 +57,7 @@ if [ -z "$WORDPRESS_TITLE" ]; then
   export WORDPRESS_TITLE='WSP AWS'
 fi
 
+
 #Show static page with error if $DOMAIN_NAME is not set
 if [ -z "$DOMAIN_NAME" ]; then
   echo '<h1>Environment variable $DOMAIN_NAME is not set. Please set it with Wordpress domain and re-deploy</h1>' > /var/www/html/index.html

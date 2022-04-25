@@ -9,15 +9,15 @@ services:
       db:
         condition: service_healthy
     environment:
-      - DOMAIN_NAME
+      - DOMAIN_NAME=localhost
       - WORDPRESS_ADMIN_USER
       - WORDPRESS_ADMIN_PASSWORD=wordpress #If you want to use the random generated password, just remove this line
-      - WORDPRESS_ADMIN_EMAIL
-      - WORDPRESS_DB_USER
-      - WORDPRESS_DB_HOST
-      - WORDPRESS_DB_NAME
-      - WORDPRESS_DB_PASSWORD
-      - WORDPRESS_DEBUG=true
+      - WORDPRESS_ADMIN_EMAIL=test@local.host
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_NAME=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
+#      - WORDPRESS_DEBUG=true
     ports:
       - "80:80"
     volumes:
@@ -25,13 +25,13 @@ services:
   db:
     image: mariadb
     environment:
-      - MARIADB_ROOT_PASSWORD
-      - MARIADB_USER
-      - MARIADB_PASSWORD
-      - MARIADB_DATABASE
+      - MARIADB_ROOT_PASSWORD=wordpress
+      - MARIADB_USER=wordpress
+      - MARIADB_PASSWORD=wordpress
+      - MARIADB_DATABASE=wordpress
     volumes:
       - ./db-data:/var/lib/mysql
     healthcheck:
-      test: mysqladmin -u${MARIADB_USER} -p${MARIADB_ROOT_PASSWORD} ping -h localhost
+      test: mysqladmin -uwordpress -pwordpress ping -h localhost
       timeout: 3s
       retries: 10
