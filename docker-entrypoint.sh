@@ -97,9 +97,11 @@ else
       --admin_user="$WORDPRESS_ADMIN_USER" --admin_email="$WORDPRESS_ADMIN_EMAIL" \
       --admin_password="$WORDPRESS_ADMIN_PASSWORD" --path=/var/www/html/
     fi
+    #Example of adding an image to use it as a product image
+    export PRODUCT_IMAGE_ID=$(runuser -u www-data -- wp media import https://jx.testplesk.com/wp-content/uploads/2020/10/bg_wptoolkit.png --porcelain)
     runuser -u www-data -- wp plugin activate woocommerce
     runuser -u www-data -- wp theme activate storefront
-    runuser -u www-data -- wp --user=1 wc product create --name="Example of a simple product" --type="simple" --regular_price="11.00"
+    runuser -u www-data -- wp --user=1 wc product create --name="Example of a simple product" --type="simple" --regular_price="11.00" --images='[{"id":"'$PRODUCT_IMAGE_ID'"}]'
     runuser -u www-data -- wp --user=1 wc product create --name="Example of an variable product" --type="variable" --attributes='[ { "name":"size", "variation":"true", "options":"X|XL" } ]'
     runuser -u www-data -- wp --user=1 wc product_variation create 11 --attributes='[ { "name":"size", "option":"X" } ]' --regular_price="51.00"
     runuser -u www-data -- wp option update page_on_front 5
@@ -119,7 +121,6 @@ start_time=$(date +%s)
 echo "Starting temporary Apache for at time of copying wp-content to EFS directory"
 "$@" &
 APACHE_PID=$!
-
 while true; do
     sleep 1
     if ps -p $COPY_PID > /dev/null
