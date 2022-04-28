@@ -113,6 +113,11 @@ fi
 
 set -u
 
+#We initially install Wordpress, plugins and themes into ephemeral volume, and then we move them to EFS persistent volume
+#This is because installation to ephemeral volume is much faster than EFS. Installation, activation plugin and theme takes about 10 minutes in case of EFS.
+#The same operation takes about 30 seconds in case of ephemeral volume. It means that we can install Wordpress, plugins and themes in ephemeral volume and then move them to EFS persistent volume in a single step.
+#Then we create a symlink between EFS persistent volume and ephemeral volume and restart Apache.
+
 mkdir -p /mnt/data/
 chown www-data:www-data  /mnt/data
 runuser -u www-data -- cp -pr /var/www/html/wp-content  /mnt/data/ &
