@@ -102,9 +102,11 @@ else
     runuser -u www-data -- wp plugin activate woocommerce
     runuser -u www-data -- wp theme activate storefront
     runuser -u www-data -- wp --user=1 wc product create --name="Example of a simple product" --type="simple" --regular_price="11.00" --images='[{"id":"'$PRODUCT_IMAGE_ID'"}]'
-    runuser -u www-data -- wp --user=1 wc product create --name="Example of an variable product" --type="variable" --attributes='[ { "name":"size", "variation":"true", "options":"X|XL" } ]'
-    runuser -u www-data -- wp --user=1 wc product_variation create 11 --attributes='[ { "name":"size", "option":"X" } ]' --regular_price="51.00"
-    runuser -u www-data -- wp option update page_on_front 5
+    export VARIABLE_PRODUCT_ID=$(runuser -u www-data -- wp --user=1 wc product create --name="Example of an variable product" --type="variable" --attributes='[ { "name":"size", "variation":"true", "options":"X|XL" } ]' --porcelain)
+    runuser -u www-data -- wp --user=1 wc product_variation create $VARIABLE_PRODUCT_ID --attributes='[ { "name":"size", "option":"X" } ]' --regular_price="51.00"
+    runuser -u www-data -- wp --user=1 wc product_variation create $VARIABLE_PRODUCT_ID --attributes='[ { "name":"size", "option":"XL" } ]' --regular_price="51.00"
+    export SHOP_PAGE_ID=$(runuser -u www-data -- wp post list --post_type=page --name=Shop --format=ids)
+    runuser -u www-data -- wp option update page_on_front $SHOP_PAGE_ID
     runuser -u www-data -- wp option update show_on_front page
     echo "End configuring WordPress"
 fi
