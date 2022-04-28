@@ -9,7 +9,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      - DOMAIN_NAME=localhost
+      - WORDPRESS_URL=localhost
       - WORDPRESS_ADMIN_USER
       - WORDPRESS_ADMIN_PASSWORD=wordpress #If you want to use the random generated password, just remove this line
       - WORDPRESS_ADMIN_EMAIL=test@local.host
