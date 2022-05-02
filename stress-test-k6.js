@@ -44,8 +44,8 @@ export let options = {
         "check_failure_rate": [
             // Global failure rate should be less than 1%
             "rate<0.01",
-            // Abort the test early if it climbs over 30%
-            { threshold: "rate<=0.3", abortOnFail: true },
+            // Abort the test early if it climbs over 80%
+            { threshold: "rate<=0.8", abortOnFail: true },
         ],
     },
 };
