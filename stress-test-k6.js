@@ -20,6 +20,7 @@ if (__ENV.DOMAIN_NAME) {
 
 // defaults can be overwriten via env variables
 users = __ENV.USERS ? __ENV.USERS : users;
+testDuration = __ENV.DURATION ? __ENV.DURATION : testDuration;
 
 // A custom metric to track failure rates
 var failureRate = new Rate("check_failure_rate");
