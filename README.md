@@ -2,7 +2,7 @@ There is an WooCommerce docker image.  You can run it as you want, but it's bett
 
 # How to use the stress test
 
-Execute `docker run -i grafana/k6 -e DOMAIN_NAME="<WooCommerceDomainName>" run github.com/wspaws/woocommerce/stress-test-k6.js`
+Execute `docker run -i grafana/k6 -e DOMAIN_NAME="<WooCommerceDomainName>" run github.com/wspaws/woocommerce/stress-test-k6.js`.  Note: git clone is not required.
 
 ## Configuration variables
 You can also use the following configuration variables:
