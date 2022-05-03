@@ -18,6 +18,12 @@ if (__ENV.DOMAIN_NAME) {
     throw new Error(`DOMAIN_NAME is "${domainName}".  Specify DOMAIN_NAME to load.`);
 }
 
+//Remove http or https from domain name if present
+if (domainName.indexOf('http') > -1) {
+    domainName = domainName.replace('http://', '');
+    domainName = domainName.replace('https://', '');
+}
+
 // defaults can be overwriten via env variables
 users = __ENV.USERS ? __ENV.USERS : users;
 testDuration = __ENV.DURATION ? __ENV.DURATION : testDuration;
