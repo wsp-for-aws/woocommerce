@@ -57,7 +57,7 @@ export default function () {
     let checkRes = check(response, {
         "http2 is used": (r) => r.proto === "HTTP/2.0",
         "status is 200": (r) => r.status === 200,
-        "content is present": (r) => r.body.indexOf("Description") !== -1,
+        "content is present": (r) => r.body.indexOf("cart") !== -1,
     });
 
     // We reverse the check() result since we want to count the failures
