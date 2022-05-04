@@ -101,6 +101,8 @@ else
     export PRODUCT_IMAGE_ID=$(runuser -u www-data -- wp media import https://jx.testplesk.com/wp-content/uploads/2020/10/bg_wptoolkit.png --porcelain)
     runuser -u www-data -- wp plugin activate woocommerce
     runuser -u www-data -- wp theme activate storefront
+    runuser -u www-data -- wp plugin auto-updates enable --all
+    runuser -u www-data -- wp theme auto-updates enable --all
     runuser -u www-data -- wp --user=1 wc product create --name="Example of a simple product" --type="simple" --regular_price="11.00" --images='[{"id":"'$PRODUCT_IMAGE_ID'"}]'
     export VARIABLE_PRODUCT_ID=$(runuser -u www-data -- wp --user=1 wc product create --name="Example of an variable product" --type="variable" --attributes='[ { "name":"size", "variation":"true", "options":"X|XL" } ]' --porcelain)
     runuser -u www-data -- wp --user=1 wc product_variation create $VARIABLE_PRODUCT_ID --attributes='[ { "name":"size", "option":"X" } ]' --regular_price="51.00"
