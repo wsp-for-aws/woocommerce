@@ -1,4 +1,4 @@
-// run command: docker run -i grafana/k6 -e DOMAIN_NAME="domain" -e USERS=20 -e DURATION="58m" run - <stress-test-k6.js
+// run command: docker run --rm -i grafana/k6 -e DOMAIN_NAME="domain" -e USERS=20 -e DURATION="58m" run - <stress-test-k6.js
 
 import http from "k6/http";
 import { check, group, sleep } from "k6";
