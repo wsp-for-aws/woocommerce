@@ -15,7 +15,7 @@ var testDuration = "58m";
 if (__ENV.DOMAIN_NAME) {
     domainName = __ENV.DOMAIN_NAME;
 } else {
-    throw new Error(`DOMAIN_NAME is "${domainName}".  Specify DOMAIN_NAME to load.`);
+    throw new Error(`DOMAIN_NAME is undefined. Specify environment variable DOMAIN_NAME to load.`);
 }
 
 //Remove http or https from domain name if present
@@ -80,7 +80,7 @@ export default function () {
         // Combine check() call with failure tracking
         failureRate.add(!check(resps, {
             "status is 200": (r) => r[0].status === 200 && r[1].status === 200,
-            "reused connection": (r) => r[0].timings.connecting == 0,
+            "reused connection": (r) => r[0].timings.connecting === 0,
         }));
     });
 
