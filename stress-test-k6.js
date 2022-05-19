@@ -1,15 +1,27 @@
-// run command: docker run --rm -i grafana/k6 -e DOMAIN_NAME="domain" -e USERS=20 -e DURATION="58m" run - <stress-test-k6.js
+// full data:
+// docker run -v ~/results/:/home/k6/results/ -i grafana/k6 -e DOMAIN_NAME="domains" run -o json=results/full.json.gz - <stress-test-k6.js
+//
+// using grafana:
+// git clone https://github.com/luketn/docker-k6-grafana-influxdb.git
+// cd docker-k6-grafana-influxdb
+// docker-compose up -d influxdb grafana
+// docker-compose run k6 -e DOMAIN_NAME="domains" run - <stress-test-k6.js
+// see results in your web browser via http://localhost:3000/d/k6/k6-load-testing-results
+
 
 import http from "k6/http";
 import { check, group, sleep } from "k6";
 import { Rate } from "k6/metrics";
+import { textSummary } from "https://jslib.k6.io/k6-summary/0.0.1/index.js";
+
 
 var domainName; // domain name where our WooCommerce is set up
 var pscheme = 'https';
 var users = 10;  // how many users visits our website simultaneously
 var minPause = 2; // a random pause between http requests (in seconds)
 var maxPause = 5;
-var testDuration = "58m";
+var phaseDuration = 20;
+var rampDuration;
 
 // domain name is required
 if (__ENV.DOMAIN_NAME) {
@@ -26,26 +38,89 @@ if (domainName.indexOf('http') > -1) {
 
 // defaults can be overwriten via env variables
 users = __ENV.USERS ? __ENV.USERS : users;
-testDuration = __ENV.DURATION ? __ENV.DURATION : testDuration;
+users = Math.floor(users);
+phaseDuration = __ENV.PHASE_DURATION ? __ENV.PHASE_DURATION : phaseDuration;
+phaseDuration = Math.floor(phaseDuration);
+rampDuration = Math.floor(phaseDuration / 5) + 1;
 
 // A custom metric to track failure rates
 var failureRate = new Rate("check_failure_rate");
 
 // Options
 export let options = {
-    stages: [
-        // Linearly ramp up from 1 to 50 VUs during first minute
-        { target: users, duration: "1m" },
-        // Hold at ${users} VUs for the next period
-        { target: users, duration: testDuration },
-        // Linearly ramp down from ${users} to 0 VUs over the last minute
-        { target: 0, duration: "1m" }
-    ],
+    scenarios: {
+        common_case: {
+            startTime: "0s",
+            executor: 'ramping-vus',
+            startVUs: 0,
+            stages: [
+                { target: users, duration: "1m" },
+                { target: users, duration: `${phaseDuration}m` }
+            ]
+        },
+
+        common_case_x2: {
+            startTime: (1+phaseDuration).toString() + "m",
+            executor: 'ramping-vus',
+            startVUs: users,
+            stages: [
+                { target: users * 2, duration: `${rampDuration}m` },
+                { target: users * 2, duration: `${phaseDuration}m` }
+            ]
+        },
+
+        common_case_x4: {
+            startTime: (1+phaseDuration*2+rampDuration).toString() + "m",
+            executor: 'ramping-vus',
+            startVUs: users * 2,
+            stages: [
+                { target: users * 4, duration: `${rampDuration}m` },
+                { target: users * 4, duration: `${phaseDuration}m` }
+            ]
+        },
+
+        wave_rpm: {
+            startTime: (1+phaseDuration*3+rampDuration*2).toString() + "m",
+            executor: 'ramping-arrival-rate',
+            startRate: 60,
+            timeUnit: '1m',
+            preAllocatedVUs: 100,
+            maxVUs: 200,
+            stages: [
+                { target: 60, duration: `${rampDuration}m` },
+                { target: 600, duration: `${rampDuration}m` },
+                { target: 300, duration: `${rampDuration}m` },
+                { target: 1200, duration: `${rampDuration}m` },
+                { target: 900, duration: `${rampDuration}m` },
+                { target: 1800, duration: `${rampDuration}m` },
+                { target: 1200, duration: `${rampDuration}m` },
+                { target: 1800, duration: `${rampDuration}m` },
+                { target: 900, duration: `${rampDuration}m` },
+                { target: 900, duration: `${rampDuration}m` },
+                { target: 300, duration: `${rampDuration}m` },
+                { target: 300, duration: `${rampDuration}m` },
+            ]
+        },
+
+        smooth_down: {
+            startTime: (1+phaseDuration*3+rampDuration*2+rampDuration*12).toString() + "m",
+            executor: 'ramping-arrival-rate',
+            startRate: 300,
+            timeUnit: '1m',
+            preAllocatedVUs: 50,
+            maxVUs: 100,
+            stages: [
+                { target: 0, duration: `${rampDuration}m` }
+            ]
+        }
+
+    },
+
     thresholds: {
-        // We want the 95th percentile of all HTTP request durations to be less than 2s
-        "http_req_duration": ["p(95)<2000"],
+        // We want the 95th percentile of all HTTP request durations to be less than 2.5s
+        "http_req_duration": ["p(95)<2500"],
         // Requests with the staticAsset tag should finish faster
-        "http_req_duration{staticAsset:yes}": ["p(95)<500"],
+        "http_req_duration{staticAsset:yes}": ["p(95)<1000"],
         // Thresholds based on the custom metric we defined and use to track application failures
         "check_failure_rate": [
             // Global failure rate should be less than 1%
@@ -85,4 +160,11 @@ export default function () {
     });
 
     sleep(Math.random() * (maxPause-minPause) + minPause); // Random sleep
+}
+
+export function handleSummary(data) {
+    return {
+//        "results/result.json": JSON.stringify(data),
+        stdout: textSummary(data, { indent: " ", enableColors: true }),
+    };
 }
