@@ -23,3 +23,4 @@ You can also use the following configuration variables:
 1. PHASE_DURATION - the phase duration in minutes.  Default is 20, so the whole test will take up to 72 minutes (see the source code for explanation)
 
 Example: `docker run -i grafana/k6 -e DOMAIN_NAME="my-woo-commerce.example.com" -e USERS=10 -e PHASE_DURATION=20 run github.com/wspaws/woocommerce/stress-test-k6.js`
+

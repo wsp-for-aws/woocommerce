@@ -8,6 +8,7 @@
 // docker-compose run k6 -e DOMAIN_NAME="domains" run - <stress-test-k6.js
 // see results in your web browser via http://localhost:3000/d/k6/k6-load-testing-results
 
+
 import http from "k6/http";
 import { check, group, sleep } from "k6";
 import { Rate } from "k6/metrics";
@@ -26,7 +27,13 @@ var rampDuration;
 if (__ENV.DOMAIN_NAME) {
     domainName = __ENV.DOMAIN_NAME;
 } else {
-    throw new Error(`DOMAIN_NAME is "${domainName}".  Specify DOMAIN_NAME to load.`);
+    throw new Error(`DOMAIN_NAME is undefined. Specify environment variable DOMAIN_NAME to load.`);
+}
+
+//Remove http or https from domain name if present
+if (domainName.indexOf('http') > -1) {
+    domainName = domainName.replace('http://', '');
+    domainName = domainName.replace('https://', '');
 }
 
 // defaults can be overwriten via env variables
@@ -148,7 +155,7 @@ export default function () {
         // Combine check() call with failure tracking
         failureRate.add(!check(resps, {
             "status is 200": (r) => r[0].status === 200 && r[1].status === 200,
-            "reused connection": (r) => r[0].timings.connecting == 0,
+            "reused connection": (r) => r[0].timings.connecting === 0,
         }));
     });
 
