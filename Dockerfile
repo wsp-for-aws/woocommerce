@@ -9,6 +9,14 @@ RUN set -eux; \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
+# Install mysqlcheck for healthcheck 'wp-cli db check'
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        mariadb-client \
+    ; \
+    rm -rf /var/lib/apt/lists/*
+
 # install the PHP extensions we need (https://make.wordpress.org/hosting/handbook/handbook/server-environment/#php-extensions)
 RUN set -ex; \
 	\

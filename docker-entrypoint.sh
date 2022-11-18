@@ -75,6 +75,24 @@ fi
 set +e
 export WP_CLI_CACHE_DIR="/tmp/.wp-cli/cache/"
 
+
+for i in {1..5}
+do
+  echo "Checking if DB is ready"
+  wp db check --allow-root
+  if [ $? -eq 0 ]; then
+    echo "Database is ready"
+    break
+  else
+    if [ $i -eq 5 ]; then
+      echo "Database is not ready after 5 attempts. Exiting"
+      exit 1
+    fi
+    echo "Database is not ready, waiting 10 seconds"
+    sleep 10
+  fi
+done
+
 wp core --allow-root is-installed
 INSTALLED=$?
 set -e
