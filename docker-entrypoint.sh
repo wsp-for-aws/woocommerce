@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 echo "Running docker-entrypoint.sh"
-echo "Wordpress version is 5.3.9"
 set -Eeuo pipefail
 if [[ "$1" == apache2* ]] || [ "$1" = 'php-fpm' ]; then
 	uid="$(id -u)"
@@ -80,7 +79,9 @@ wp core --allow-root is-installed
 INSTALLED=$?
 set -e
 if [ $INSTALLED -eq 0 ]; then
-    echo "Wordpress is already installed, skipping installation"
+    echo "Wordpress `wp core --allow-root version` is already installed, skipping installation"
+    # Print out the current version of Wordpress
+
     runuser -u www-data -- mv /var/www/html/wp-content /var/www/html/wp-content_backup && echo "Successfully backed up wp-content" || echo "Failed to back up wp-content"
     runuser -u www-data -- ln -s /mnt/data/wp-content /var/www/html && echo "Created a symlink to wp-content" || echo "Failed to create symlink to wp-content"
 
@@ -97,6 +98,7 @@ else
       --admin_user="$WORDPRESS_ADMIN_USER" --admin_email="$WORDPRESS_ADMIN_EMAIL" \
       --admin_password="$WORDPRESS_ADMIN_PASSWORD" --path=/var/www/html/
     fi
+    echo "Wordpress version is `wp core --allow-root version`"
     #Example of adding an image to use it as a product image
     export PRODUCT_IMAGE_ID=$(runuser -u www-data -- wp media import https://jx.testplesk.com/wp-content/uploads/2020/10/bg_wptoolkit.png --porcelain)
     runuser -u www-data -- wp plugin activate woocommerce

@@ -122,11 +122,13 @@ RUN set -eux; \
     apt-get install -y unzip;
 
 
+#Copy wp-cli from wp-cli image
+#COPY --from=wordpress /usr/local/bin/wp /usr/local/bin/wp
 
 RUN curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
     && chmod +x /usr/local/bin/wp
 
-
+#Download wordpress
 RUN set -eux; \
     mkdir -p /var/www/html; \
     \
@@ -134,13 +136,6 @@ RUN set -eux; \
         --allow-root \
         --path=/var/www/html \
         --force;
-
-#Copy wp-cli from wp-cli image
-#COPY --from=wordpress /usr/local/bin/wp /usr/local/bin/wp
-
-#Download wordpress
-RUN set -eux; \
-    wp core download --allow-root --path=/var/www/html --force;
 
 #Download WooCommerce plugin
 RUN set -eux; \
