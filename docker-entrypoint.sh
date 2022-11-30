@@ -158,7 +158,6 @@ if [ ! -f "$WP_READY" ]; then
   APACHE_PID=$!
   while [ ! -f "$WP_READY" ]; do
     sleep 1
-    ls /mnt/data
     if ( set -o noclobber; echo "locked" > "$WP_INIT_LOCK") 2> /dev/null; then
       trap "rm -f $WP_INIT_LOCK" EXIT
       wpInstall
