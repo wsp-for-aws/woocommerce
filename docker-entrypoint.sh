@@ -114,7 +114,7 @@ if [ -z "$WORDPRESS_ADMIN_EMAIL" ]; then
   export WORDPRESS_ADMIN_EMAIL='wsp@local.host'
 fi
 if [ -z "$WORDPRESS_TITLE" ]; then
-  export WORDPRESS_TITLE='WSP AWS'
+  export WORDPRESS_TITLE='WooCommerce example powered by WSP for AWS'
 fi
 
 
