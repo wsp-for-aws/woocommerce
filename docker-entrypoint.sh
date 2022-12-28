@@ -15,6 +15,8 @@ wpInstall() {
   #Example of adding an image to use it as a product image
   export PRODUCT_IMAGE_ID=$(runuser -u www-data -- wp media import https://jx.testplesk.com/wp-content/uploads/2020/10/bg_wptoolkit.png --porcelain)
   runuser -u www-data -- wp plugin activate woocommerce
+  # Disable woocommerce cron task which deletes private data because of this bug https://wordpress.org/support/topic/wp_1_wc_privacy_cleanup-running-amock/
+  runuser -u www-data -- wp cron event unschedule woocommerce_cleanup_personal_data
   runuser -u www-data -- wp theme activate storefront
   runuser -u www-data -- wp plugin auto-updates enable --all
   runuser -u www-data -- wp theme auto-updates enable --all
