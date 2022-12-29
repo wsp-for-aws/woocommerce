@@ -136,3 +136,7 @@ define( 'WP_DEBUG_LOG', true );
 /** Sets up WordPress vars and included files. */
 require_once ABSPATH . 'wp-settings.php';
 
+# check if this file is not proccessing via wp-cli
+if ( !defined( 'WP_CLI' ) ) {
+    add_filter( 'wpmm_status_code', 200 );
+}
