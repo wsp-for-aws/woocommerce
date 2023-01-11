@@ -141,15 +141,16 @@ RUN set -eux; \
     mkdir -p /var/www/html; \
     \
     wp core download \
+		--version=6.0\
         --allow-root \
         --path=/var/www/html \
         --force;
 
 #Download WooCommerce plugin
 RUN set -eux; \
-    curl -O https://downloads.wordpress.org/plugin/woocommerce.zip; \
-    unzip woocommerce.zip -d /var/www/html/wp-content/plugins/; \
-    rm woocommerce.zip;
+    curl -O https://downloads.wordpress.org/plugin/woocommerce.6.2.2.zip; \
+    unzip woocommerce.6.2.2.zip -d /var/www/html/wp-content/plugins/; \
+    rm woocommerce.6.2.2.zip;
 
 #Download Storefront theme
 RUN set -eux; \
