@@ -141,7 +141,6 @@ RUN set -eux; \
     mkdir -p /var/www/html; \
     \
     wp core download \
-		--version=6.0\
         --allow-root \
         --path=/var/www/html \
         --force;
