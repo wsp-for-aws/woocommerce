@@ -124,6 +124,8 @@ RUN set -eux; \
 # (replace all instances of "%h" with "%a" in LogFormat)
 	find /etc/apache2 -type f -name '*.conf' -exec sed -ri 's/([[:space:]]*LogFormat[[:space:]]+"[^"]*)%h([^"]*")/\1%a\2/g' '{}' +
 
+RUN sed -i 's/\/var\/www\/html/\/var\/www\/html\/wp/g' /etc/apache2/sites-available/000-default.conf
+
 #Install unzip for themes and plugins installation
 RUN set -eux; \
     apt-get update; \
@@ -138,29 +140,29 @@ RUN curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh
 
 #Download wordpress
 RUN set -eux; \
-    mkdir -p /var/www/html; \
+    mkdir -p /var/www/html/wp; \
     \
     wp core download \
         --allow-root \
-        --path=/var/www/html \
+        --path=/var/www/html/wp \
         --force;
 
 #Download WooCommerce plugin
 RUN set -eux; \
     curl -O https://downloads.wordpress.org/plugin/woocommerce.zip; \
-    unzip woocommerce.zip -d /var/www/html/wp-content/plugins/; \
+    unzip woocommerce.zip -d /var/www/html/wp/wp-content/plugins/; \
     rm woocommerce.zip;
 
 #Download Storefront theme
 RUN set -eux; \
     curl -O https://downloads.wordpress.org/theme/storefront.zip; \
-    unzip storefront.zip -d /var/www/html/wp-content/themes/; \
+    unzip storefront.zip -d /var/www/html/wp/wp-content/themes/; \
     rm storefront.zip;
 
-COPY wp-config.php /var/www/html/wp-config.php
-COPY .htaccess /var/www/html/.htaccess
+COPY wp-config.php /var/www/html/wp/wp-config.php
+COPY .htaccess /var/www/html/wp/.htaccess
 
-RUN chown -R www-data:www-data /var/www/html;
+RUN chown -R www-data:www-data /var/www/html/wp;
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
