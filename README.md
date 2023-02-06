@@ -1,4 +1,11 @@
 There is an WooCommerce docker image.  You can run it as you want, but it's better to use WSP AWS (https://wsp-aws.io).
+# How image works
+
+Image consists of two logical parts, a Wordpress installer and a web server serving the installed website. 
+When the container starts, it checks for the presence of the installed website on an external volume. If the website is not installed, the flag is captured. At this time, other containers running in parallel are in a waiting mode, and only one container performs the installation. 
+The process of installing WordPress require a real-time database connection, the site starts immediately after installation and demo data is populated, and then the installed site is copied to an external volume (AWS EFS) which takes 150-180 seconds. 
+The temporary Apache is stopped and the second flag of successful installation is set. The container then switches to site display mode by changing the site directory from internal to external volume. Other containers, if running in parallel, can switch from wait mode to display mode once they see the successful installation flag. 
+The same will happen with all newly launched containers, they will bypass the installation and immediately start serving the site from the external volume.
 
 # How to use the stress test
 
