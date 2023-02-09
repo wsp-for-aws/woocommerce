@@ -1,11 +1,13 @@
 There is an WooCommerce docker image.  You can run it as you want, but it's better to use WSP AWS (https://wsp-aws.io).
-# How image works
+# How it works
 
-Image consists of two logical parts, a Wordpress installer and a web server serving the installed website. 
-When the container starts, it checks for the presence of the installed website on an external volume. If the website is not installed, the flag is captured. At this time, other containers running in parallel are in a waiting mode, and only one container performs the installation. 
-The process of installing WordPress require a real-time database connection, the site starts immediately after installation and demo data is populated, and then the installed site is copied to an external volume (AWS EFS) which takes 150-180 seconds. 
-The temporary Apache is stopped and the second flag of successful installation is set. The container then switches to site display mode by changing the site directory from internal to external volume. Other containers, if running in parallel, can switch from wait mode to display mode once they see the successful installation flag. 
-The same will happen with all newly launched containers, they will bypass the installation and immediately start serving the site from the external volume.
+This repository contains a Docker image for Wordpress, packed and ready to run. The image runs a check when launched to confirm that Wordpress has been installed. If it has not, the installation process is initiated, using file locks to prevent multiple instances of the installer from running simultaneously.
+
+Once installed, the application is immediately accessible and ready to respond to HTTP requests, allowing for quick and easy access to Wordpress. This immediate accessibility also enables the application to pass liveness and readiness checks. In the background, the application's files are copied to an EFS (Elastic File System) for persistent storage, so that data will not be lost in case of a container restart.
+
+After the files are copied to EFS, the application starts storing its files in the EFS and Apache is reloaded to reflect the change in directory. The setup ensures that the data is safe and available even after a restart of the container.
+
+Additionally, this script installs and configures WordPress, the WooCommerce plugin, and the Storefront theme. It also creates two sample products (one simple, one variable) and sets the shop page as the front page. The WordPress installation, plugins, and themes are copied from a temporary (ephemeral) volume to a persistent volume on Amazon Elastic File System (EFS). The script sets several environment variables for configuration options (e.g. WORDPRESS_ADMIN_PASSWORD, WORDPRESS_TITLE, etc.). It also enables auto-updates for all plugins and themes.
 
 # How to use the stress test
 
